@@ -1,7 +1,5 @@
 package com.myteek.kafka.base;
 
-import jdk.internal.util.xml.impl.ReaderUTF8;
-
 import java.nio.charset.Charset;
 
 public class Constants {
