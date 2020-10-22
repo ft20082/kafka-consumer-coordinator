@@ -149,7 +149,7 @@ public class KCCoordinator implements AutoCloseable {
                                             byte[] itemDirData = kcClient.getData(currentItemDir, null, null);
                                             if (itemDirData != null && itemDirData.length > 0) {
                                                 int itemDirDataValue = Integer.valueOf(new String(itemDirData, Constants.CHARSET));
-                                                log.debug("leader get current item progress path data: thread: {}, current path:{}, data: {}, currentMaxTimestamp: {}",
+                                                log.info("leader get current item progress path data: thread: {}, current path:{}, data: {}, currentMaxTimestamp: {}",
                                                         Thread.currentThread(), currentItemDir, itemDirDataValue, currentMaxTimestamp);
                                                 if (itemDirDataValue == currentMaxTimestamp) {
                                                     successNum ++;
@@ -162,16 +162,20 @@ public class KCCoordinator implements AutoCloseable {
                                                 log.debug("get progress path data error. current item dir: {}", currentItemDir);
                                             }
                                         }
-                                        if (successNum == dirs.size()) {
+                                        if (successNum == topicPartitionListContentSize) {
                                             // update coordinator path next period timestamp
                                             long newCurrentMaxTimestamp = currentMaxTimestamp + period;
+                                            log.info("leader thread change current max timestamp from {} to {}",
+                                                    currentMaxTimestamp, newCurrentMaxTimestamp);
                                             currentMaxTimestamp = newCurrentMaxTimestamp;
                                             kcClient.setData(coordinatorPath,
                                                     String.valueOf(newCurrentMaxTimestamp).getBytes(Constants.CHARSET), -1);
                                             kcStatus = KCStatus.NORMAL;
                                             break;
                                         } else {
-                                            log.info("not all topic partitions offset up to current max timestamp.");
+                                            log.info("leader status, not all topic partitions offset up to current max timestamp. thread: {}," +
+                                                    " successNum: {}, " + "topic partition list content size: {}",
+                                                    Thread.currentThread(), successNum, topicPartitionListContentSize);
                                         }
                                     } else {
                                         log.debug("current dir size not equal topic partitions list size. " +
@@ -218,7 +222,7 @@ public class KCCoordinator implements AutoCloseable {
                                                             .collect(Collectors.joining(", ")), currentMaxTimestamp, dataNum);
                                             break;
                                         } else {
-                                            log.debug("waiting for synchronized. current thread: {}, topic partitions: {}, " +
+                                            log.info("waiting for synchronized. current thread: {}, topic partitions: {}, " +
                                                     "dataNum: {} is equals to currentMaxTimestamp: {}", Thread.currentThread(),
                                                     Common.toTopicPartitionsString(topicPartitions), dataNum, currentMaxTimestamp);
                                         }

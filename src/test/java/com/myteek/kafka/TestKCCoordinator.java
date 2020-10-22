@@ -58,7 +58,7 @@ public class TestKCCoordinator {
                             properties.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 
                             KCCoordinator kcCoordinator = new KCCoordinator(connectString,
-                                    Arrays.asList(new TopicPartition(topic, Arrays.asList(0, 1, 2))), 1586505780, 60);
+                                    Arrays.asList(new TopicPartition(topic, Arrays.asList(0, 1, 2))), 1586505780, 30);
                             kcCoordinator.initialElection();
 
                             KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<String, String>(properties);
@@ -77,7 +77,7 @@ public class TestKCCoordinator {
 
                                             // or put them in cache, check next 10 records timestamp
                                             if (kcCoordinator.checkLimit(timestamp)) {
-                                                System.out.println("thread: " + Thread.currentThread() + ", topic: test, partition: " + temp + ", timestamp: " + timestamp + ", message: " + message);
+                                                //System.out.println("thread: " + Thread.currentThread() + ", topic: test, partition: " + temp + ", timestamp: " + timestamp + ", message: " + message);
                                             } else {
                                                 // current timestamp is great than current max timestamp, waiting for synchronize
                                                 log.info("current topic partition wait for synchronize, topic: {}, partition: {} start", topic, temp);
